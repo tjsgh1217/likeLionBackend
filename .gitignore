@@ -58,3 +58,15 @@ jspm_packages/
 # OS
 .DS_Store
 Thumbs.db
+
+# Security - Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.csr
+*.pem
+id_rsa
+id_rsa.pub
+*.ppk
