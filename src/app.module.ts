@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AiController, AiService } from './ai';
+import { AiController, AiService, AiCourseService } from './ai';
 import { PlacesModule } from './places';
 
 @Module({
@@ -14,6 +14,6 @@ import { PlacesModule } from './places';
     PlacesModule,
   ],
   controllers: [AppController, AiController],
-  providers: [AppService, AiService],
+  providers: [AppService, AiService, AiCourseService],
 })
 export class AppModule {}
