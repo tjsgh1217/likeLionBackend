@@ -280,7 +280,6 @@ export class AiService {
         },
       );
 
-      // 파싱 없이 원문 문자열 반환
       return response.data.choices[0].message.content;
     } catch (error) {
       console.error('AI Recommendation Error:', error.message);
