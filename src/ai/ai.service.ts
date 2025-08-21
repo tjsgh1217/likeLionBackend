@@ -60,6 +60,14 @@ export class AiService {
 
 ### 출력 형식(JSON)
 "~~추천 장소 리스트를 반드시 JSON 형식({ ... })으로만, 다른 텍스트 없이 반환하세요.."
+[반드시 지킬 출력 규칙]
+- 코드블록(\`\`\` 등)이나 'json', 'JSON', 'Json' 등 접두어(예: json [ ... ]), 설명, 불필요한 텍스트를 절대 붙이지 마세요.
+- 다른 텍스트 없이 반드시 아래와 같이 { "recommendations": [...] } 형태의 JSON 오브젝트만 반환하세요.
+- 출력 문자열 내에 **역슬래시($$, '\', 줄바꿈(\n) 또는 문자 'n'** 등이 포함되지 않도록 하세요.
+- 모든 줄바꿈은 실제 줄바꿈 문자로, 이스케이프된 문자가 아닌 사람이 읽히는 형태로 작성하세요.
+
+예시:
+
 [
   {
     "place_id": "장소ID",
@@ -181,7 +189,7 @@ export class AiService {
     radius: number,
     members: string,
     placeTypes: string[],
-  ): Promise<any[]> {
+  ): Promise<string> {
     try {
       const places = await this.searchMultipleTypes(
         latitude,
@@ -191,7 +199,7 @@ export class AiService {
       );
 
       if (places.length === 0) {
-        return [];
+        return '';
       }
 
       const prompt = this.placeRecommendationPrompt
@@ -211,6 +219,7 @@ export class AiService {
           ],
           max_tokens: 2000,
           temperature: 0.4,
+          response_format: { type: 'json_object' },
         },
         {
           headers: {
@@ -220,20 +229,8 @@ export class AiService {
         },
       );
 
-      const content = response.data.choices[0].message.content;
-      let recommendations: any[] = [];
-      try {
-        const jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          recommendations = JSON.parse(jsonMatch);
-        } else {
-          recommendations = [{ error: 'JSON 파싱 실패', raw: content }];
-        }
-      } catch {
-        recommendations = [{ error: 'JSON 파싱 실패', raw: content }];
-      }
-
-      return recommendations;
+      // 파싱 없이 AI 응답 원문 문자열 그대로 반환
+      return response.data.choices[0].message.content;
     } catch (error) {
       console.error('AI Recommendation Error:', error.message);
       throw new HttpException(
@@ -250,10 +247,10 @@ export class AiService {
     latitude: number,
     longitude: number,
     radius: number,
-  ): Promise<any[]> {
+  ): Promise<string> {
     try {
       if (!places || places.length === 0) {
-        return [];
+        return '';
       }
 
       const prompt = this.placeRecommendationPrompt
@@ -273,6 +270,7 @@ export class AiService {
           ],
           max_tokens: 2000,
           temperature: 0.4,
+          response_format: { type: 'json_object' },
         },
         {
           headers: {
@@ -282,20 +280,8 @@ export class AiService {
         },
       );
 
-      const content = response.data.choices[0].message.content;
-      let recommendations: any[] = [];
-      try {
-        const jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          recommendations = JSON.parse(jsonMatch);
-        } else {
-          recommendations = [{ error: 'JSON 파싱 실패', raw: content }];
-        }
-      } catch {
-        recommendations = [{ error: 'JSON 파싱 실패', raw: content }];
-      }
-
-      return recommendations;
+      // 파싱 없이 원문 문자열 반환
+      return response.data.choices[0].message.content;
     } catch (error) {
       console.error('AI Recommendation Error:', error.message);
       throw new HttpException(
